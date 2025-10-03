@@ -1,0 +1,318 @@
+                                                Documentación Completa del Sistema RestaurantPOS by pedro ureña
+
+ 1. Introducción y Visión General
+
+El sistema RestaurantPOS es una solución integral de punto de venta diseñada específicamente para restaurantes. 
+el sistema maneja todas las operaciones de un restaurante, incluyendo gestión de mesas, pedidos, delivery, facturación, 
+inventario y control de usuarios.
+
+este proyecto sera escalable a largo plazo. si obtiene este sistemas utilizalo con moderacion y queda retringido la venta y retribucion del mismo solo para uso educativo,
+debido a que lo desarrolle para un cliente, y busco el poder seguir actualizando y mejorando el sistemas queda prohibido atribuirse trabajo del mismo. 
+
+en caso de necesitar otros documento que no esten o asesoria comunicate directo conmigo.
+
+ 2. Arquitectura del Sistema
+
+ 2.1. Estructura de Carpetas
+```
+/restaurantpos/admin
+│
+├── /config/           # Configuración, conexión BD y seguridad
+├── /auditoria/        # Logs y auditorías del sistema
+├── /factura/          # Facturación y cierre de caja
+├── /delivery/         # Módulo de pedidos delivery
+├── /mesas/            # Gestión de mesas
+├── /bar/              # Gestión de pedidos en bar
+├── /usuario/          # Administración de usuarios y roles
+├── /products/         # Gestión de productos e inventario
+├── /empresa/          # Configuración de la empresa (RNC, datos fiscales)
+├── /hrm/              # Recursos humanos (empleados)
+├── /notificaciones/   # Alertas y mensajes internos
+├── /partials/         # Plantillas reutilizables
+├── /logs/             # Registros de errores y actividades
+└── index.php          # Página de inicio/controlador principal
+```otros modulos en admin
+
+          2.2. Tecnologías Utilizadas
+
+- **Backend**: PHP nativo
+- **Base de datos**: MySQL/MariaDB
+- **Frontend**: HTML, CSS, JavaScript, Bootstrap
+- **Seguridad**: Encriptación SHA1, validación de entradas
+
+
+               2.2. Tecnologías Utilizadas
+🔹 Lenguajes y Frameworks
+
+PHP 8+ → núcleo del sistema.
+
+Laravel → estructura moderna y mantenible.
+
+JavaScript (Vanilla + librerías) → validaciones y funciones interactivas.
+
+AJAX / Fetch API → comunicación asíncrona (actualización de pedidos, facturas en tiempo real).
+
+HTML5 / CSS3 / Bootstrap → interfaz responsiva y adaptable a dispositivos móviles.
+
+Tailwind (en ajustes visuales) → modernización del estilo.
+
+🔹 Base de Datos
+
+MySQL 8 → gestión relacional de datos, optimizada con índices y claves foráneas.
+
+phpMyAdmin → administración y respaldo de la BD.
+
+🔹 Servidor y Entorno
+
+Apache 2.4+ (sobre Linux o Windows).
+
+XAMPP/LAMP (entorno de desarrollo local).
+
+Hosting cPanel con soporte PHP/MySQL para producción.
+
+🔹 Integraciones Locales
+
+Formato monetario RD$ con 2 decimales.
+
+Cálculo automático de ITBIS 18 % en facturación.
+
+2.2.3 Métodos de Seguridad Utilizados
+
+🔹 Autenticación y Control de Acceso
+
+Sistema de roles y permisos → administrador, cajero, mesero, supervisor.
+
+Validación de login con sesiones seguras → check_login.php.
+
+Bloqueo de acceso directo a páginas restringidas → validación previa de usuario.
+
+🔹 Protección de Datos y Operaciones
+
+Consultas parametrizadas (PDO / MySQLi) → protección contra inyección SQL.
+
+Sanitización de entradas (filtros en PHP y JS).
+
+Validación en cliente y servidor → doble control de formularios.
+
+Logs centralizados → registro en /logs/error.log y auditoría de actividades.
+
+🔹 Gestión de Errores
+
+Deshabilitar errores en producción (display_errors = 0).
+
+Redirección a páginas personalizadas de error (404, 403, 500).(por trabajar queda pendiente para otra version en producion, esta sera la demo 1)
+
+🔹 Sesiones y Cookies
+
+Regeneración de sesión después de login.
+
+Expiración automática de sesiones inactivas.
+
+Restricción de cookies con HttpOnly y Secure (en servidores HTTPS).
+
+🔹 Acceso a Archivos
+
+Archivos sensibles fuera del alcance público (/config/config.php).
+
+.htaccess para denegar acceso a directorios críticos.
+.bloqueo de los modulos directo delimitado por usuarios. 
+
+
+          3. Base de Datos y Esquema
+
+            3.1. Tablas Principales
+
+         **Tablas de Gestión de Usuarios**
+
+- `rpos_admin` - Administradores del sistema
+- `rpos_staff` - Personal del restaurante con diferentes roles
+- `rpos_customers` - Clientes registrados
+
+     **Tablas de Gestión de Productos**
+
+- `rpos_products` - Catálogo de productos
+- `rpos_categorias_productos` - Categorías de productos
+- `categoria_tipo` - Tipos de categorías (Comida/Bebida)
+
+     **Tablas de Operaciones**
+
+- `rpos_orders` - Órdenes generales
+- `rpos_order_items` - Items de las órdenes
+- `rpos_delivery_orders` - Órdenes de delivery
+- `rpos_delivery_items` - Items de delivery
+- `rpos_mesas` - Gestión de mesas
+- `rpos_ordenes_mesas` - Relación órdenes-mesas
+
+    **Tablas de Facturación y Pagos**
+
+- `rpos_facturas` - Facturas generadas
+- `rpos_factura_items` - Items de facturas
+- `rpos_payments` - Pagos procesados
+- `rpos_caja` - Control de caja registradora
+- `rpos_movimientos_caja` - Movimientos de caja
+
+           **Tablas de Configuración**
+
+- `rpos_configuracion` - Configuración del restaurante
+- `rpos_secuenciales_comprobantes` - Secuenciales para facturación
+
+3.2. Relaciones Clave
+
+- Las órdenes están vinculadas a mesas o delivery
+- Las facturas se generan a partir de órdenes
+- Los pagos se registran contra facturas
+- El inventario se descuenta al realizar órdenes
+
+4. Módulos Principales
+
+4.1. Módulo de Autenticación y Usuarios
+
+- Sistema de roles: Administrador, Mesero, Cocinero, Bartender, Delivery, Cajero
+- Activación por email con claves de seguridad
+- Recuperación de contraseñas
+- Auditoría de movimientos (`rpos_movimientos_log`)
+
+4.2. Módulo de Gestión de Productos
+
+- Categorización de productos (Comida/Bebida)
+- Control de inventario
+- Gestión de precios
+- Imágenes de productos
+
+4.3. Módulo de Mesas y Órdenes
+
+- Gestión de estado de mesas (Disponible, Ocupada, etc.)
+- Creación de órdenes por mesa
+- Seguimiento de estado de preparación
+- Notificaciones para cocina y bar
+
+4.4. Módulo de Delivery
+
+- Gestión completa de pedidos para llevar
+- Seguimiento de estado (Recibido, En preparación, En camino, Entregado)
+- Sistema de repartidores
+- Cálculo de costos de envío
+
+4.5. Módulo de Facturación
+
+- Generación de facturas fiscales y finales
+- Cálculo automático de ITEBIS (18%) y servicio (10%)
+- Secuenciales de comprobantes (NCF)
+- Diferentes métodos de pago
+
+4.6. Módulo de Caja
+
+- Apertura y cierre de caja
+- Control de montos iniciales y finales
+- Reportes de ventas por método de pago
+- Movimientos de caja (ingresos/egresos)
+
+5. Flujos de Trabajo Principales
+
+5.1. Proceso de Atención en Mesa
+
+1. Asignar mesa a cliente
+2. Tomar orden a través del sistema
+3. Orden enviada a cocina/bar
+4. Actualizar estado de preparación
+5. Marcar como listo para servir
+6. Generar factura
+7. Procesar pago
+8. Cerrar mesa
+
+5.2. Proceso de Delivery
+
+1. Recepción de pedido por teléfono/sistema
+2. Registro de datos del cliente
+3. Asignación a repartidor (opcional)
+4. Seguimiento de estados
+5. Facturación y entrega
+6. Confirmación de pago
+
+5.3. Cierre de Caja Diario
+
+1. Apertura con monto inicial
+2. Registro de todas las transacciones
+3. Cálculo de ventas por método de pago
+4. Cierre con monto final
+5. Generación de reporte
+
+6. Características de Seguridad
+
+- Autenticación de usuarios con hash de contraseñas
+- Control de acceso por roles
+- Registro de todas las actividades (auditoría)
+- Validación de datos de entrada
+- Protección contra inyecciones SQL
+- **Futuro**: Encriptación de URLs (pendiente para próxima versión)
+
+7. Personalización y Configuración
+
+7.1. Configuración del Restaurante
+
+- Datos fiscales (RNC, nombre, dirección)
+- Porcentajes de impuestos (ITEBIS) y servicio
+- Configuración de logo empresarial
+- Secuenciales de facturación
+
+ 7.2. Tipos de Clientes
+
+- Personas físicas
+- Empresas (con RNC)
+- Cliente genérico para ventas rápidas
+
+8. Reportes y Análisis
+
+- Ventas por período
+- Productos más vendidos
+- Rendimiento de meseros
+- Control de caja
+- Estado de mesas y órdenes
+
+9. Consideraciones Técnicas para Mejoras Futuras
+
+9.1. Encriptación de URLs (Próxima Versión)
+
+Como se discutió, la encriptación de URLs visibles en el navegador está planificada para una futura versión. Consideraciones:
+
+- Algoritmo: AES-256
+- Ámbito: Parámetros sensibles en URLs
+- Implementación: Middleware para encriptar/desencriptar
+- Impacto: Minimizar exposición de datos sensibles
+
+9.2. Otras Mejoras Identificadas
+
+- API RESTful para integraciones
+- App móvil para toma de órdenes en mesa
+- Dashboard en tiempo real
+- Integración con impresoras fiscales
+- Sistema de lealtad de clientes
+
+10. Estado Actual del Sistema
+
+10.1. Funcionalidades Completadas
+
+- ✅ Gestión de usuarios y autenticación
+- ✅ CRUD completo de productos y categorías
+- ✅ Sistema de mesas y órdenes
+- ✅ Módulo de delivery completo
+- ✅ Sistema de facturación con NCF
+- ✅ Control de caja y reportes
+- ✅ Notificaciones en tiempo real
+- ✅ Gestión de estados (cocina, bar, delivery)
+- ✅ Repostes
+- ✅ Auditoria (solo caja se puede expandir)
+
+ 10.2. Próximas Implementaciones
+
+- Encriptación de URLs (como se discutió)
+- Integración con payment gateways
+- App móvil para meseros
+- Dashboard avanzado con analytics
+- Sistema de reservas en línea
+
+11. Conclusión
+
+El sistema RestaurantPOS es una solución robusta y completa para la gestión de restaurantes. La arquitectura modular permite una fácil expansión y las características implementadas cubren todos los aspectos operativos de un restaurante moderno. La base de datos está bien estructurada y normalizada, permitiendo escalabilidad y mantenimiento.
+
+La próxima versión, que incluirá la encriptación de URLs como se discutió, mejorará aún más la seguridad del sistema sin comprometer la usabilidad.
