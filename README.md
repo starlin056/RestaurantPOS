@@ -72,7 +72,7 @@ Este proyecto está licenciado bajo los términos de la [Creative Commons Atribu
 
 **Autor:** Pedro Ureña  
 **Especialidad:** Arquitectura de sistemas POS, empaquetado multiplataforma, automatización y UX  
-**Email:** *(puedes añadirlo si deseas)*
+**Email:** *(starlin056@gmail.com)*
 
 ---
 
