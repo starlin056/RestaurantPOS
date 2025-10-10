@@ -4,6 +4,8 @@
 
 Este sistema está diseñado para la administración eficiente de restaurantes, con enfoque en experiencia de usuario, seguridad, activación por equipo y compatibilidad multiplataforma. Desarrollado con PHP Desktop, incluye flujos de activación, protección contra copia, y navegación optimizada.
 
+Todas las líneas de codigo estan debidamente comentada para facilitar la ampliaciónes de los módulos. este proyecto no se podría comercializar sin la autorización.
+
 ---
 
 ## 🚀 Características principales
