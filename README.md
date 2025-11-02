@@ -86,3 +86,6 @@ Este proyecto está licenciado bajo los términos de la [Creative Commons Atribu
 
 ---
 
+
+
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/starlin056/RestaurantPOS)
